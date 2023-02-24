@@ -370,7 +370,6 @@ func (a *Auth) GetModels() (string, error) {
 		"Referer":         "https://chat.openai.com/chat",
 	}
 	resp, err := a.Client.R().SetHeaders(headers).Get(api)
-	fmt.Println(string(resp.Body()))
 	if err != nil {
 		return "", err
 	}
