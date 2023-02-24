@@ -355,3 +355,28 @@ func (a *Auth) getAccessToken() error {
 
 	return nil
 }
+
+func (a *Auth) GetModels() (string, error) {
+	if a.accessToken == "" {
+		return "", errors.New("no access token")
+	}
+	api := "https://chat.openai.com/backend-api/models"
+	headers := map[string]string{
+		"Host":            "chat.openai.com",
+		"Accept":          "application/json",
+		"User-Agent":      a.UA,
+		"Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
+		"Authorization":   "Bearer " + a.accessToken,
+		"Referer":         "https://chat.openai.com/chat",
+	}
+	resp, err := a.Client.R().SetHeaders(headers).Get(api)
+	fmt.Println(string(resp.Body()))
+	if err != nil {
+		return "", err
+	}
+	if resp.StatusCode() != 200 {
+		return "", errors.New("error response")
+	}
+
+	return gjson.Get(string(resp.Body()), "models.0.slug").Str, nil
+}
